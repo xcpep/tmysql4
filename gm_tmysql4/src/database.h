@@ -70,7 +70,7 @@ public:
 
 	T * pop_all_reverse(void)
 	{
-		return head_.exchange(0, std::memory_order_consume);
+		return head_.exchange(0, std::memory_order_acquire);
 	}
 private:
 	std::atomic<T *> head_;

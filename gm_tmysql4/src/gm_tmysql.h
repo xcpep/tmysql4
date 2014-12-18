@@ -1,10 +1,8 @@
-#ifdef WIN32
+#if defined(_WIN32) || defined(WIN32)
 #include <winsock2.h>
 #endif
 
-#define GMMODULE
-
 #include <mysql.h>
 
-#include "GarrysMod/lua/Interface.h"
+#include "Lua/Interface.h"
 #include "database.h"
