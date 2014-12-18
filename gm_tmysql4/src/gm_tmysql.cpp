@@ -401,7 +401,16 @@ GMOD_MODULE_OPEN()
 			LUA->PushCFunction(pollall);
 			LUA->SetField(-2, "PollAll");
 		LUA->SetField(-2, "tmysql");
-	LUA->Pop(1);
+
+		LUA->GetField(-1, "hook");
+			LUA->GetField(-1, "Add");
+				LUA->PushString("Tick");
+				LUA->PushString("tmysql4");
+				LUA->PushCFunction(pollall);
+			LUA->Call(3,0);
+		LUA->Pop();
+
+	LUA->Pop();
 
 	LUA->CreateMetaTableType(DATABASE_NAME, DATABASE_ID);
 	{
