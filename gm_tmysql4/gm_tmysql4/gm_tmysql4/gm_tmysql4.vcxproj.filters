@@ -1,0 +1,228 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="Source Files">
+      <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
+      <Extensions>cpp;c;cc;cxx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
+    </Filter>
+    <Filter Include="include">
+      <UniqueIdentifier>{6ad397df-cbfe-459e-89ea-8c78b58348d2}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="include\mysql">
+      <UniqueIdentifier>{8550f962-48d4-4f65-aaf4-cb85a43d029e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="include\mysql\psi">
+      <UniqueIdentifier>{ad0d616b-240c-48a6-9e13-f37f7645bcfd}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="include\GarrysMod">
+      <UniqueIdentifier>{82c4678c-4496-43c8-86a0-9fa13cc4e8cb}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="include\GarrysMod\Lua">
+      <UniqueIdentifier>{e015e612-e4e6-4ea8-9249-5b267e960e24}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="..\..\src\database.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\gm_tmysql.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\..\src\database.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\gm_tmysql.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\big_endian.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\byte_order_generic.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\byte_order_generic_x86.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\decimal.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\errmsg.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\keycache.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\little_endian.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\m_ctype.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\m_string.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\my_alloc.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\my_byteorder.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\my_compiler.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\my_config.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\my_dbug.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\my_dir.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\my_getopt.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\my_global.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\my_list.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\my_net.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\my_pthread.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\my_sys.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\my_xml.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\mysql.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\mysql_com.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\mysql_com_server.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\mysql_embed.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\mysql_time.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\mysql_version.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\mysqld_ername.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\mysqld_error.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\sql_common.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\sql_state.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\sslopt-case.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\sslopt-longopts.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\sslopt-vars.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\typelib.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\mysql\client_authentication.h">
+      <Filter>include\mysql</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\mysql\client_plugin.h">
+      <Filter>include\mysql</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\mysql\get_password.h">
+      <Filter>include\mysql</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\mysql\plugin_auth_common.h">
+      <Filter>include\mysql</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\mysql\plugin_trace.h">
+      <Filter>include\mysql</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\mysql\service_mysql_alloc.h">
+      <Filter>include\mysql</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\mysql\psi\mysql_file.h">
+      <Filter>include\mysql\psi</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\mysql\psi\mysql_idle.h">
+      <Filter>include\mysql\psi</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\mysql\psi\mysql_mdl.h">
+      <Filter>include\mysql\psi</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\mysql\psi\mysql_memory.h">
+      <Filter>include\mysql\psi</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\mysql\psi\mysql_ps.h">
+      <Filter>include\mysql\psi</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\mysql\psi\mysql_socket.h">
+      <Filter>include\mysql\psi</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\mysql\psi\mysql_sp.h">
+      <Filter>include\mysql\psi</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\mysql\psi\mysql_stage.h">
+      <Filter>include\mysql\psi</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\mysql\psi\mysql_statement.h">
+      <Filter>include\mysql\psi</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\mysql\psi\mysql_table.h">
+      <Filter>include\mysql\psi</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\mysql\psi\mysql_thread.h">
+      <Filter>include\mysql\psi</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\mysql\psi\mysql_transaction.h">
+      <Filter>include\mysql\psi</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\mysql\psi\psi.h">
+      <Filter>include\mysql\psi</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\mysql\psi\psi_base.h">
+      <Filter>include\mysql\psi</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\mysql\psi\psi_memory.h">
+      <Filter>include\mysql\psi</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\GarrysMod\Lua\Interface.h">
+      <Filter>include\GarrysMod\Lua</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\GarrysMod\Lua\LuaBase.h">
+      <Filter>include\GarrysMod\Lua</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\GarrysMod\Lua\Types.h">
+      <Filter>include\GarrysMod\Lua</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\GarrysMod\Lua\UserData.h">
+      <Filter>include\GarrysMod\Lua</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="..\..\include\mysql\client_plugin.h.pp">
+      <Filter>include\mysql</Filter>
+    </None>
+  </ItemGroup>
+</Project>
