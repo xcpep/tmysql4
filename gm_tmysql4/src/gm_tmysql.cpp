@@ -310,17 +310,8 @@ bool PopulateTableFromQuery(lua_State* state, Query* query)
 	if (result == NULL)
 		return true;
 
-	MYSQL_FIELD* fields = NULL;
 	MYSQL_ROW row = mysql_fetch_row(result);
 	int field_count = mysql_num_fields(result);
-
-	if (query->GetFlags() & QUERY_FLAG_ASSOC)
-	{
-		fields = mysql_fetch_fields(result);
-
-		if (fields == NULL)
-			return false;
-	}
 
 	int rowid = 1;
 
@@ -335,17 +326,36 @@ bool PopulateTableFromQuery(lua_State* state, Query* query)
 
 		for (int i = 0; i < field_count; i++)
 		{
-			if (query->GetFlags() & QUERY_FLAG_ASSOC)
-			{
-				LUA->PushString(row[i]);
-				LUA->SetField(-2, fields[i].name);
-			}
-			else
-			{
+			MYSQL_FIELD* field = mysql_fetch_field_direct(result, i);
+
+			bool accos = query->GetFlags() & QUERY_FLAG_ASSOC;
+
+			if (!accos)
 				LUA->PushNumber(i + 1);
-				LUA->PushString(row[i]);
-				LUA->SetTable(-3);
+
+			if (row[i] == NULL) {
+				LUA->PushNil();
+			} else if (field->type == MYSQL_TYPE_DECIMAL ||
+				field->type == MYSQL_TYPE_NEWDECIMAL ||
+				field->type == MYSQL_TYPE_FLOAT ||
+				field->type == MYSQL_TYPE_DOUBLE) {
+				double value = atof(row[i]);
+				LUA->PushNumber(value);
 			}
+			else if (field->type == MYSQL_TYPE_TINY ||
+				field->type == MYSQL_TYPE_SHORT ||
+				field->type == MYSQL_TYPE_INT24 ||
+				field->type == MYSQL_TYPE_BIT ||
+				field->type == MYSQL_TYPE_LONG) {
+				int value = atoi(row[i]);
+				LUA->PushNumber(value);
+			} else
+				LUA->PushString(row[i]);
+
+			if (accos)
+				LUA->SetField(-2, field->name);
+			else
+				LUA->SetTable(-3);
 		}
 
 		LUA->SetTable(-3);
