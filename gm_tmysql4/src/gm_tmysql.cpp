@@ -333,23 +333,19 @@ bool PopulateTableFromQuery(lua_State* state, Query* query)
 			if (!accos)
 				LUA->PushNumber(i + 1);
 
-			if (row[i] == NULL) {
+			if (row[i] == NULL)
 				LUA->PushNil();
-			} else if (field->type == MYSQL_TYPE_DECIMAL ||
+			else if (field->type == MYSQL_TYPE_DECIMAL ||
 				field->type == MYSQL_TYPE_NEWDECIMAL ||
 				field->type == MYSQL_TYPE_FLOAT ||
-				field->type == MYSQL_TYPE_DOUBLE) {
-				double value = atof(row[i]);
-				LUA->PushNumber(value);
-			}
-			else if (field->type == MYSQL_TYPE_TINY ||
+				field->type == MYSQL_TYPE_DOUBLE ||
+				field->type == MYSQL_TYPE_TINY ||
 				field->type == MYSQL_TYPE_SHORT ||
 				field->type == MYSQL_TYPE_INT24 ||
 				field->type == MYSQL_TYPE_BIT ||
-				field->type == MYSQL_TYPE_LONG) {
-				int value = atoi(row[i]);
-				LUA->PushNumber(value);
-			} else
+				field->type == MYSQL_TYPE_LONG)
+				LUA->PushNumber(atof(row[i]));
+			else
 				LUA->PushString(row[i]);
 
 			if (accos)
