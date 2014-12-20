@@ -10,7 +10,7 @@ int iRefDatabases;
 void DisconnectDB(lua_State* state, Database* mysqldb);
 void DispatchCompletedQueries(lua_State* state, Database* mysqldb);
 void HandleQueryCallback(lua_State* state, Query* query);
-bool PopulateTableFromQuery(lua_State* state, Query* query);
+void PopulateTableFromQuery(lua_State* state, Query* query);
 
 bool in_shutdown = false;
 
@@ -245,14 +245,10 @@ void DispatchCompletedQueries(lua_State* state, Database* mysqldb)
 		Query* query = completed;
 
 		if (query->GetCallback() >= 0)
-		{
 			HandleQueryCallback(state, query);
-		}
 
 		if (query->GetResult() != NULL)
-		{
 			mysql_free_result(query->GetResult());
-		}
 
 		completed = query->next;
 		delete query;
@@ -267,13 +263,8 @@ void HandleQueryCallback(lua_State* state, Query* query)
 	if (!LUA->IsType(-1, Type::FUNCTION))
 	{
 		LUA->Pop();
+		LUA->ReferenceFree(query->GetCallbackRef());
 		return;
-	}
-
-	LUA->CreateTable();
-	if (!PopulateTableFromQuery(state, query))
-	{
-		LUA->ThrowError("Unable to populate result table");
 	}
 
 	int args = 3;
@@ -284,16 +275,15 @@ void HandleQueryCallback(lua_State* state, Query* query)
 		LUA->ReferenceFree(query->GetCallbackRef());
 	}
 
+	LUA->CreateTable();
+	PopulateTableFromQuery(state, query);
+
 	LUA->PushBool(query->GetStatus());
 
 	if (query->GetStatus())
-	{
 		LUA->PushNumber(query->GetLastID());
-	}
 	else
-	{
 		LUA->PushString(query->GetError().c_str());
-	}
 
 	if (LUA->PCall(args, 0, 0) != 0 && !in_shutdown)
 	{
@@ -302,13 +292,13 @@ void HandleQueryCallback(lua_State* state, Query* query)
 	}
 }
 
-bool PopulateTableFromQuery(lua_State* state, Query* query)
+void PopulateTableFromQuery(lua_State* state, Query* query)
 {
 	MYSQL_RES* result = query->GetResult();
 
 	// no result to push, continue, this isn't fatal
 	if (result == NULL)
-		return true;
+		return;
 
 	MYSQL_ROW row = mysql_fetch_row(result);
 	int field_count = mysql_num_fields(result);
@@ -361,8 +351,6 @@ bool PopulateTableFromQuery(lua_State* state, Query* query)
 		row = mysql_fetch_row(result);
 		rowid++;
 	}
-
-	return true;
 }
 
 GMOD_MODULE_OPEN()
@@ -469,8 +457,8 @@ void closeAllDatabases(lua_State* state)
 
 GMOD_MODULE_CLOSE()
 {
-	mysql_library_end();
 	closeAllDatabases(state);
 	LUA->ReferenceFree(iRefDatabases);
+	mysql_library_end();
 	return 0;
 }
