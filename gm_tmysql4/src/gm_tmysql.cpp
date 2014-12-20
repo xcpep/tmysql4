@@ -142,8 +142,9 @@ int setcharset(lua_State* state)
 	const char* set = LUA->CheckString(2);
 
 	std::string error;
-	mysqldb->SetCharacterSet( set, error );
-	return 0;
+	LUA->PushBool(mysqldb->SetCharacterSet( set, error ));
+	LUA->PushString(error.c_str());
+	return 2;
 }
 
 int query(lua_State* state)

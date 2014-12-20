@@ -83,7 +83,8 @@ char* Database::Escape(const char* query)
 	size_t len = strlen(query);
 	char* escaped = new char[len * 2 + 1];
 
-	mysql_escape_string(escaped, query, len);
+	MYSQL* pMYSQL = GetAvailableConnection();
+	mysql_real_escape_string(pMYSQL, escaped, query, len);
 
 	return escaped;
 }
