@@ -1,7 +1,7 @@
 #include "gm_tmysql.h"
 
-Database::Database(const char* host, const char* user, const char* pass, const char* db, int port, const char* socket) :
-m_strHost(host), m_strUser(user), m_strPass(pass), m_strDB(db), m_iPort(port), m_strSocket(socket)
+Database::Database(const char* host, const char* user, const char* pass, const char* db, int port, const char* socket, int flags) :
+m_strHost(host), m_strUser(user), m_strPass(pass), m_strDB(db), m_iPort(port), m_strSocket(socket), m_iClientFlags(flags)
 {
 	work.reset(new asio::io_service::work(io_service));
 }
@@ -40,7 +40,10 @@ bool Database::Initialize(std::string& error)
 
 bool Database::Connect(MYSQL* mysql, std::string& error)
 {
-	if (!mysql_real_connect(mysql, m_strHost, m_strUser, m_strPass, m_strDB, m_iPort, m_strSocket, 0))
+	my_bool reconnect = 1;
+	mysql_options(mysql, MYSQL_OPT_RECONNECT, &reconnect);
+
+	if (!mysql_real_connect(mysql, m_strHost, m_strUser, m_strPass, m_strDB, m_iPort, m_strSocket, m_iClientFlags))
 	{
 		error.assign(mysql_error(mysql));
 		return false;
@@ -103,10 +106,9 @@ bool Database::SetCharacterSet(const char* charset, std::string& error)
 	return true;
 }
 
-void Database::QueueQuery(const char* query, int callback, int flags, int callbackref)
+void Database::QueueQuery(const char* query, int callback, int callbackref)
 {
-	Query* newquery = new Query(query, callback, flags, callbackref);
-
+	Query* newquery = new Query(query, callback, callbackref);
 	QueueQuery(newquery);
 }
 
@@ -132,56 +134,26 @@ void Database::DoExecute(Query* query)
 	const char* strquery = query->GetQuery().c_str();
 	size_t len = query->GetQueryLength();
 
-	int err = mysql_real_query(pMYSQL, strquery, len);
-	std::string error = mysql_error(pMYSQL);
-
-	if (err > 0)
+	if (mysql_real_query(pMYSQL, strquery, len) != 0)
 	{
-		int ping = mysql_ping(pMYSQL);
-		if (ping > 0)
-		{
-			std::lock_guard<std::recursive_mutex> guard(m_AvailableMutex);
-
-			mysql_close(pMYSQL);
-			pMYSQL = mysql_init(NULL);
-			if (mysql_real_connect(pMYSQL, m_strHost, m_strUser, m_strPass, m_strDB, m_iPort, m_strSocket, 0))
+		query->SetStatus(false);
+		query->SetError(mysql_error(pMYSQL));
+	} else {
+		int status;
+		do {
+			Result* result = new Result();
 			{
-				err = mysql_real_query(pMYSQL, strquery, len);
-
-				if (err > 0)
-				{
-					query->SetError(error);
-					query->SetStatus(QUERY_FAIL);
-					query->SetResult(NULL);
-				}
+				result->SetResult(mysql_store_result(pMYSQL));
+				result->SetStatus(mysql_errno(pMYSQL) != 0);
+				result->SetError(mysql_error(pMYSQL));
+				result->SetAffected((double)mysql_affected_rows(pMYSQL));
+				result->SetLastID((double)mysql_insert_id(pMYSQL));
 			}
-			else
-			{
-				query->SetError("Unable to reconnect to database");
-				query->SetStatus(QUERY_FAIL);
-				query->SetResult(NULL);
-			}
-		}
-		else
-		{
-			query->SetError(error);
-			query->SetStatus(QUERY_FAIL);
-			query->SetResult(NULL);
-		}
-	}
-
-	if (err == 0)
-	{
-		query->SetStatus(QUERY_SUCCESS);
-		query->SetResult(mysql_store_result(pMYSQL));
-
-		if (query->GetFlags() & QUERY_FLAG_LASTID)
-		{
-			query->SetLastID((double) mysql_insert_id(pMYSQL));
-		}
+			query->AddResult(result);
+			status = mysql_next_result(pMYSQL);
+		} while (status == 0);
 	}
 
 	PushCompleted(query);
-
 	ReturnConnection(pMYSQL);
 }

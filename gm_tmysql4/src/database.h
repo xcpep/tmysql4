@@ -6,12 +6,6 @@
 
 using namespace boost;
 
-#define QUERY_SUCCESS true
-#define QUERY_FAIL false
-
-#define QUERY_FLAG_ASSOC 1
-#define QUERY_FLAG_LASTID 2
-
 #define NUM_THREADS_DEFAULT 2
 #define NUM_CON_DEFAULT NUM_THREADS_DEFAULT
 
@@ -76,107 +70,138 @@ private:
 	std::atomic<T *> head_;
 };
 
+class Result
+{
+public:
+	Result()
+	{
+	}
+
+	~Result(void)
+	{
+		mysql_free_result(m_pResult);
+	}
+	
+	void				SetStatus(bool status) { m_bStatus = status; }
+	bool				GetStatus(void) { return m_bStatus; }
+	
+	void				SetError(const char* error) { m_strError.assign(error); }
+	const std::string&	GetError(void) { return m_strError; }
+
+	void				SetLastID(double ID) { m_iLastID = ID; }
+	double				GetLastID(void) { return m_iLastID; }
+
+	void				SetAffected(double ID) { m_iAffected = ID; }
+	double				GetAffected(void) { return m_iAffected; }
+
+	void				SetResult(MYSQL_RES* result) { m_pResult = result; }
+	MYSQL_RES*			GetResult() { return m_pResult; }
+
+	//void				SetData(RowMap data) { m_mapRows = data; }
+	//RowMap			GetData(void) { return m_mapRows; }
+
+private:
+	bool				m_bStatus;
+	std::string			m_strError;
+	double				m_iLastID;
+	double				m_iAffected;
+	MYSQL_RES*			m_pResult;
+};
+
+typedef std::vector<Result*> Results;
+
 class Query
 {
 public:
-	Query(const char* query, int callback = -1, int flags = 0, int callbackref = -1) :
-		m_strQuery(query), m_iCallback(callback), m_iFlags(flags), m_iCallbackRef(callbackref), m_iLastID(0)
+	Query(const char* query, int callback = -1, int callbackref = -1) :
+		m_strQuery(query), m_iCallback(callback), m_iCallbackRef(callbackref)
 	{
 	}
 
 	~Query(void)
 	{
+		for (Results::iterator it = m_pResults.begin(); it != m_pResults.end(); ++it)
+			delete *it;
 	}
 
-	const std::string& GetQuery(void) { return m_strQuery; }
-	size_t          GetQueryLength(void) { return m_strQuery.length(); }
+	const std::string&	GetQuery(void) { return m_strQuery; }
+	size_t				GetQueryLength(void) { return m_strQuery.length(); }
 
-	int                     GetFlags(void) { return m_iFlags; }
-	int                     GetCallback(void) { return m_iCallback; }
-	int                     GetCallbackRef(void) { return m_iCallbackRef; }
+	int					GetCallback(void) { return m_iCallback; }
+	int					GetCallbackRef(void) { return m_iCallbackRef; }
 
-	void            SetError(const char* error) { m_strError.assign(error); }
-	void            SetError(std::string error) { m_strError=error; }
-	const std::string& GetError(void) { return m_strError; }
+	void				SetError(const char* error) { m_strError.assign(error); }
+	const std::string&	GetError(void) { return m_strError; }
 
-	void            SetStatus(bool status) { m_bStatus = status; }
-	bool            GetStatus(void) { return m_bStatus; }
+	void				SetStatus(bool status) { m_bStatus = status; }
+	bool				GetStatus(void) { return m_bStatus; }
 
-	void            SetResult(MYSQL_RES* result) { m_myResult = result; }
-	MYSQL_RES*      GetResult(void) { return m_myResult; }
-
-	void            SetLastID(double ID) { m_iLastID = ID; }
-	double          GetLastID(void) { return m_iLastID; }
+	void				AddResult(Result* result) { m_pResults.push_back(result); }
+	Results				GetResults(void) { return m_pResults; }
 
 #ifdef ENABLE_QUERY_TIMERS
-	double          GetQueryTime(void) { return m_queryTimer.GetElapsedSeconds(); }
+	double				GetQueryTime(void) { return m_queryTimer.GetElapsedSeconds(); }
 #else
-	double          GetQueryTime(void) { return 0; }
+	double				GetQueryTime(void) { return 0; }
 #endif
 
 private:
 
-	std::string     m_strQuery;
-	int                     m_iCallback;
-	int                     m_iCallbackRef;
+	std::string			m_strQuery;
+	int					m_iCallback;
+	int					m_iCallbackRef;
 
-	int                     m_iFlags;
-	bool            m_bStatus;
+	bool				m_bStatus;
 
-	MYSQL_RES*      m_myResult;
-	double          m_iLastID;
+	Results				m_pResults;
 
-	std::string     m_strError;
+	std::string			m_strError;
 
 #ifdef ENABLE_QUERY_TIMERS
-	Timer           m_queryTimer;
+	Timer				m_queryTimer;
 #endif
 
 public:
-	Query*          next;
+	Query*				next;
 };
 
 class Database
 {
 public:
-	Database(const char* host, const char* user, const char* pass, const char* db, int port, const char* socket);
+	Database(const char* host, const char* user, const char* pass, const char* db, int port, const char* socket, int flags);
 	~Database(void);
 
-	bool    Initialize(std::string& error);
-	void    Shutdown(void);
-	std::size_t RunShutdownWork(void);
-	void    Release(void);
+	bool			Initialize(std::string& error);
+	void			Shutdown(void);
+	std::size_t		RunShutdownWork(void);
+	void			Release(void);
 
-	bool            SetCharacterSet(const char* charset, std::string& error);
-	char*           Escape(const char* query);
-	void            QueueQuery(const char* query, int callback = -1, int flags = 0, int callbackref = -1);
+	const char*		GetDatabase(void) { return m_strDB; }
+	bool			SetCharacterSet(const char* charset, std::string& error);
+	char*			Escape(const char* query);
+	void			QueueQuery(const char* query, int callback = -1, int callbackref = -1);
 
-	Query*          GetCompletedQueries();
-
-	const char*             m_strDB;
+	Query*			GetCompletedQueries();
 
 private:
-	bool Connect(MYSQL* mysql, std::string& error);
+	bool		Connect(MYSQL* mysql, std::string& error);
 
-	void QueueQuery(Query* query);
+	void		QueueQuery(Query* query);
 
-	void DoExecute(Query* query);
-	void PushCompleted(Query* query);
+	void		DoExecute(Query* query);
+	void		PushCompleted(Query* query);
 
 	MYSQL* GetAvailableConnection()
 	{
 		std::lock_guard<std::recursive_mutex> guard(m_AvailableMutex);
-
 		MYSQL* result = m_vecAvailableConnections.front();
 		m_vecAvailableConnections.pop_front();
-
 		return result;
 	}
 
 	void ReturnConnection(MYSQL* mysql)
 	{
 		std::lock_guard<std::recursive_mutex> guard(m_AvailableMutex);
-
 		m_vecAvailableConnections.push_back(mysql);
 	}
 
@@ -189,9 +214,11 @@ private:
 	asio::io_service io_service;
 	std::auto_ptr<asio::io_service::work> work;
 
-	const char*             m_strHost;
-	const char*             m_strUser;
-	const char*             m_strPass;
-	int						m_iPort;
-	const char*             m_strSocket;
+	const char*			m_strHost;
+	const char*			m_strUser;
+	const char*			m_strPass;
+	const char*			m_strDB;
+	int					m_iPort;
+	const char*			m_strSocket;
+	int					m_iClientFlags;
 };
