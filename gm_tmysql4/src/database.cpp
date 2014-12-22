@@ -14,16 +14,17 @@ bool Database::Initialize(std::string& error)
 {
 	static my_bool bTrue = true;
 
-	for (int i = NUM_CON_DEFAULT; i; i--)
+	for (int i = NUM_CON_DEFAULT+1; i; i--)
 	{
 		MYSQL* mysql = mysql_init(NULL);
 
 		if (!Connect(mysql, error))
-		{
 			return false;
-		}
 
-		m_vecAvailableConnections.push_back(mysql);
+		if (i > NUM_CON_DEFAULT)
+			m_pEscapeConnection = mysql;
+		else
+			m_vecAvailableConnections.push_back(mysql);
 	}
 
 	for (unsigned int i = 0; i < NUM_THREADS_DEFAULT; ++i)
@@ -86,9 +87,7 @@ char* Database::Escape(const char* query)
 	size_t len = strlen(query);
 	char* escaped = new char[len * 2 + 1];
 
-	MYSQL* pMYSQL = GetAvailableConnection();
-	mysql_real_escape_string(pMYSQL, escaped, query, len);
-
+	mysql_real_escape_string(m_pEscapeConnection, escaped, query, len);
 	return escaped;
 }
 

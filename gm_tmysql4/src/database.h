@@ -10,7 +10,6 @@ using namespace boost;
 #define NUM_CON_DEFAULT NUM_THREADS_DEFAULT
 
 #undef ENABLE_QUERY_TIMERS
-#undef USE_THREAD_LOCAL
 
 #ifdef ENABLE_QUERY_TIMERS
 class Timer
@@ -96,9 +95,6 @@ public:
 
 	void				SetResult(MYSQL_RES* result) { m_pResult = result; }
 	MYSQL_RES*			GetResult() { return m_pResult; }
-
-	//void				SetData(RowMap data) { m_mapRows = data; }
-	//RowMap			GetData(void) { return m_mapRows; }
 
 private:
 	bool				m_bStatus;
@@ -204,6 +200,8 @@ private:
 		std::lock_guard<std::recursive_mutex> guard(m_AvailableMutex);
 		m_vecAvailableConnections.push_back(mysql);
 	}
+
+	MYSQL*	m_pEscapeConnection;
 
 	waitfree_query_queue<Query> m_completedQueries;
 	std::deque< MYSQL* > m_vecAvailableConnections;

@@ -341,6 +341,10 @@ void PopulateTableFromQuery(lua_State* state, Query* query)
 			LUA->CreateTable();
 			PopulateTableFromResult(state, result->GetResult());
 			LUA->SetField(-2, "data");
+#ifdef ENABLE_QUERY_TIMERS
+			LUA->PushNumber(query->GetQueryTime());
+			LUA->SetField(-2, "time");
+#endif
 		}
 
 		LUA->SetTable(-3);
