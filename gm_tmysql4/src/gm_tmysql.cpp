@@ -281,14 +281,14 @@ void PopulateTableFromResult(lua_State* state, MYSQL_RES* result)
 	if (result == NULL)
 		return;
 
-	MYSQL_ROW row;
+	MYSQL_ROW row = mysql_fetch_row(result);
 	int field_count = mysql_num_fields(result);
 	MYSQL_FIELD *fields = mysql_fetch_fields(result);
 	unsigned long *lengths = mysql_fetch_lengths(result);
 
 	int rowid = 1;
 
-	while ((row = mysql_fetch_row(result)))
+	while (row)
 	{
 		// black magic warning: we use a temp and assign it so that we avoid consuming all the temp objects and causing horrible disasters
 		LUA->CreateTable();
