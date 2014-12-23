@@ -93,6 +93,12 @@ char* Database::Escape(const char* query)
 
 bool Database::SetCharacterSet(const char* charset, std::string& error)
 {
+	if (mysql_set_character_set(m_pEscapeConnection, charset) > 0)
+	{
+		error.assign(mysql_error(m_pEscapeConnection));
+		return false;
+	}
+
 	for (auto iter = m_vecAvailableConnections.begin(); iter != m_vecAvailableConnections.end(); ++iter)
 	{
 		if (mysql_set_character_set(*iter, charset) > 0)
