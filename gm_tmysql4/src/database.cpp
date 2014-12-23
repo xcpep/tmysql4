@@ -144,6 +144,7 @@ void Database::DoExecute(Query* query)
 		query->SetStatus(false);
 		query->SetError(mysql_error(pMYSQL));
 	} else {
+		query->SetStatus(true);
 		int status;
 		do {
 			Result* result = new Result();
