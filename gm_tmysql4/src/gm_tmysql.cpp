@@ -330,10 +330,15 @@ void PopulateTableFromQuery(lua_State* state, Query* query)
 		
 		LUA->CreateTable();
 		{
-			LUA->PushBool(result->GetStatus());
+			bool status = result->GetErrorID() == 0;
+			LUA->PushBool(status);
 			LUA->SetField(-2, "status");
-			LUA->PushString(result->GetError().c_str());
-			LUA->SetField(-2, "error");
+			if (!status) {
+				LUA->PushString(result->GetError().c_str());
+				LUA->SetField(-2, "error");
+				LUA->PushNumber(result->GetErrorID());
+				LUA->SetField(-2, "errorid");
+			}
 			LUA->PushNumber(result->GetAffected());
 			LUA->SetField(-2, "affected");
 			LUA->PushNumber(result->GetLastID());

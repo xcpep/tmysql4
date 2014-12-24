@@ -156,7 +156,7 @@ void Database::DoExecute(Query* query)
 			Result* result = new Result();
 			{
 				result->SetResult(mysql_store_result(pMYSQL));
-				result->SetStatus(mysql_errno(pMYSQL) != 0);
+				result->SetErrorID(mysql_errno(pMYSQL));
 				result->SetError(mysql_error(pMYSQL));
 				result->SetAffected((double)mysql_affected_rows(pMYSQL));
 				result->SetLastID((double)mysql_insert_id(pMYSQL));

@@ -80,10 +80,10 @@ public:
 	{
 		mysql_free_result(m_pResult);
 	}
-	
-	void				SetStatus(bool status) { m_bStatus = status; }
-	bool				GetStatus(void) { return m_bStatus; }
-	
+
+	void				SetErrorID(int error) { m_iError = error; }
+	const int			GetErrorID(void) { return m_iError; }
+
 	void				SetError(const char* error) { m_strError.assign(error); }
 	const std::string&	GetError(void) { return m_strError; }
 
@@ -99,6 +99,7 @@ public:
 private:
 	bool				m_bStatus;
 	std::string			m_strError;
+	int					m_iError;
 	double				m_iLastID;
 	double				m_iAffected;
 	MYSQL_RES*			m_pResult;
