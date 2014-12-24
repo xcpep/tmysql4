@@ -145,32 +145,24 @@ void Database::DoExecute(Query* query)
 	const char* strquery = query->GetQuery().c_str();
 	size_t len = query->GetQueryLength();
 
-	if (mysql_real_query(pMYSQL, strquery, len) != 0)
-	{
-		query->SetStatus(false);
-		query->SetError(mysql_error(pMYSQL));
-	} else {
-		query->SetStatus(true);
+	mysql_real_query(pMYSQL, strquery, len);
 
-		int status;
-		do {
-			MYSQL_RES* pResult = mysql_store_result(pMYSQL);
-			unsigned int errorno = mysql_errno(pMYSQL);
+	int status;
+	do {
+		MYSQL_RES* pResult = mysql_store_result(pMYSQL);
+		unsigned int errorno = mysql_errno(pMYSQL);
 
-			Result* result = new Result();
-			{
-				result->SetResult(pResult);
-				result->SetErrorID(errorno);
-				result->SetError(mysql_error(pMYSQL));
-				if (errorno == 0) {
-					result->SetAffected((double)mysql_affected_rows(pMYSQL));
-					result->SetLastID((double)mysql_insert_id(pMYSQL));
-				}
-			}
-			query->AddResult(result);
-			status = mysql_next_result(pMYSQL);
-		} while (status != -1);
-	}
+		Result* result = new Result();
+		{
+			result->SetResult(pResult);
+			result->SetErrorID(errorno);
+			result->SetError(mysql_error(pMYSQL));
+			result->SetAffected((double)mysql_affected_rows(pMYSQL));
+			result->SetLastID((double)mysql_insert_id(pMYSQL));
+		}
+		query->AddResult(result);
+		status = mysql_next_result(pMYSQL);
+	} while (status != -1);
 
 	PushCompleted(query);
 	ReturnConnection(pMYSQL);

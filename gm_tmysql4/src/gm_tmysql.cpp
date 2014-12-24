@@ -253,20 +253,16 @@ void HandleQueryCallback(lua_State* state, Query* query)
 		return;
 	}
 
-	int args = 3;
+	int args = 1;
 	if (query->GetCallbackRef() >= 0)
 	{
-		args = 4;
+		args = 2;
 		LUA->ReferencePush(query->GetCallbackRef());
 		LUA->ReferenceFree(query->GetCallbackRef());
 	}
 
 	LUA->CreateTable();
 	PopulateTableFromQuery(state, query);
-
-	LUA->PushBool(query->GetStatus());
-
-	LUA->PushString(query->GetError().c_str());
 
 	if (LUA->PCall(args, 0, 0) != 0 && !in_shutdown)
 	{
@@ -338,14 +334,15 @@ void PopulateTableFromQuery(lua_State* state, Query* query)
 				LUA->SetField(-2, "error");
 				LUA->PushNumber(result->GetErrorID());
 				LUA->SetField(-2, "errorid");
+			} else {
+				LUA->PushNumber(result->GetAffected());
+				LUA->SetField(-2, "affected");
+				LUA->PushNumber(result->GetLastID());
+				LUA->SetField(-2, "lastid");
+				LUA->CreateTable();
+				PopulateTableFromResult(state, result->GetResult());
+				LUA->SetField(-2, "data");
 			}
-			LUA->PushNumber(result->GetAffected());
-			LUA->SetField(-2, "affected");
-			LUA->PushNumber(result->GetLastID());
-			LUA->SetField(-2, "lastid");
-			LUA->CreateTable();
-			PopulateTableFromResult(state, result->GetResult());
-			LUA->SetField(-2, "data");
 #ifdef ENABLE_QUERY_TIMERS
 			LUA->PushNumber(query->GetQueryTime());
 			LUA->SetField(-2, "time");

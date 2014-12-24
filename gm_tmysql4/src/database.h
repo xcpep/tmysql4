@@ -97,7 +97,6 @@ public:
 	MYSQL_RES*			GetResult() { return m_pResult; }
 
 private:
-	bool				m_bStatus;
 	std::string			m_strError;
 	int					m_iError;
 	double				m_iLastID;
@@ -127,12 +126,6 @@ public:
 	int					GetCallback(void) { return m_iCallback; }
 	int					GetCallbackRef(void) { return m_iCallbackRef; }
 
-	void				SetError(const char* error) { m_strError.assign(error); }
-	const std::string&	GetError(void) { return m_strError; }
-
-	void				SetStatus(bool status) { m_bStatus = status; }
-	bool				GetStatus(void) { return m_bStatus; }
-
 	void				AddResult(Result* result) { m_pResults.push_back(result); }
 	Results				GetResults(void) { return m_pResults; }
 
@@ -148,11 +141,7 @@ private:
 	int					m_iCallback;
 	int					m_iCallbackRef;
 
-	bool				m_bStatus;
-
 	Results				m_pResults;
-
-	std::string			m_strError;
 
 #ifdef ENABLE_QUERY_TIMERS
 	Timer				m_queryTimer;
