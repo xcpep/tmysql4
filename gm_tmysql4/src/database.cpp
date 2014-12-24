@@ -1,7 +1,7 @@
 #include "gm_tmysql.h"
 
 Database::Database(const char* host, const char* user, const char* pass, const char* db, int port, const char* socket, int flags) :
-m_strHost(host), m_strUser(user), m_strPass(pass), m_strDB(db), m_iPort(port), m_strSocket(socket), m_iClientFlags(flags)
+m_strHost(host), m_strUser(user), m_strPass(pass), m_strDB(db), m_iPort(port), m_strSocket(socket), m_iClientFlags(flags), m_pEscapeConnection(NULL)
 {
 	work.reset(new asio::io_service::work(io_service));
 }
@@ -80,6 +80,12 @@ void Database::Release(void)
 	}
 
 	m_vecAvailableConnections.clear();
+
+	if (m_pEscapeConnection != NULL)
+	{
+		mysql_close(m_pEscapeConnection);
+		m_pEscapeConnection = NULL;
+	}
 }
 
 char* Database::Escape(const char* query)
