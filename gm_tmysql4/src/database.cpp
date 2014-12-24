@@ -151,19 +151,25 @@ void Database::DoExecute(Query* query)
 		query->SetError(mysql_error(pMYSQL));
 	} else {
 		query->SetStatus(true);
+
 		int status;
 		do {
+			MYSQL_RES* pResult = mysql_store_result(pMYSQL);
+			unsigned int errorno = mysql_errno(pMYSQL);
+
 			Result* result = new Result();
 			{
-				result->SetResult(mysql_store_result(pMYSQL));
-				result->SetErrorID(mysql_errno(pMYSQL));
+				result->SetResult(pResult);
+				result->SetErrorID(errorno);
 				result->SetError(mysql_error(pMYSQL));
-				result->SetAffected((double)mysql_affected_rows(pMYSQL));
-				result->SetLastID((double)mysql_insert_id(pMYSQL));
+				if (errorno == 0) {
+					result->SetAffected((double)mysql_affected_rows(pMYSQL));
+					result->SetLastID((double)mysql_insert_id(pMYSQL));
+				}
 			}
 			query->AddResult(result);
 			status = mysql_next_result(pMYSQL);
-		} while (status == 0);
+		} while (status != -1);
 	}
 
 	PushCompleted(query);

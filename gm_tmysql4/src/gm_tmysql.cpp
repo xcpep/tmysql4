@@ -282,23 +282,24 @@ void PopulateTableFromResult(lua_State* state, MYSQL_RES* result)
 		return;
 
 	MYSQL_ROW row = mysql_fetch_row(result);
-	int field_count = mysql_num_fields(result);
 	MYSQL_FIELD *fields = mysql_fetch_fields(result);
-	unsigned long *lengths = mysql_fetch_lengths(result);
 
 	int rowid = 1;
 
 	while (row)
 	{
+		unsigned int field_count = mysql_num_fields(result);
+		unsigned long *lengths = mysql_fetch_lengths(result);
+
 		// black magic warning: we use a temp and assign it so that we avoid consuming all the temp objects and causing horrible disasters
 		LUA->CreateTable();
 		int resultrow = LUA->ReferenceCreate();
 
-		LUA->PushNumber(rowid);
+		LUA->PushNumber(rowid++);
 		LUA->ReferencePush(resultrow);
 		LUA->ReferenceFree(resultrow);
 
-		for (int i = 0; i < field_count; i++)
+		for (unsigned int i = 0; i < field_count; i++)
 		{
 			if (row[i] == NULL)
 				LUA->PushNil();
@@ -313,7 +314,6 @@ void PopulateTableFromResult(lua_State* state, MYSQL_RES* result)
 		LUA->SetTable(-3);
 
 		row = mysql_fetch_row(result);
-		rowid++;
 	}
 }
 
