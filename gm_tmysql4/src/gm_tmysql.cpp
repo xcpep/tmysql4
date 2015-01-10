@@ -299,7 +299,7 @@ void PopulateTableFromResult(lua_State* state, MYSQL_RES* result)
 		{
 			if (row[i] == NULL)
 				LUA->PushNil();
-			else if (IS_NUM(fields[i].type))
+			else if (IS_NUM(fields[i].type) && fields[i].type != MYSQL_TYPE_LONGLONG)
 				LUA->PushNumber(atof(row[i]));
 			else
 				LUA->PushString(row[i], lengths[i]);
