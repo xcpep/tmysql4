@@ -1,5 +1,4 @@
---local boost = "/var/srcsdk/boost_1_57_0"
-local boost = "D:/Repositories/boost_1_57_0"
+local boost = "/media/jake/storage/Documents/Developer/cpp/boost_1_57_0/"
 
 solution "gm_tmysql4"
 
@@ -22,6 +21,7 @@ solution "gm_tmysql4"
 	}
 	
 	configuration "Release"
+		buildoptions { "-std=c++11" }
 		defines { "NDEBUG" }
 		flags{ "Optimize", "FloatFast" }
 	

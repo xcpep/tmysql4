@@ -117,9 +117,9 @@ bool Database::SetCharacterSet(const char* charset, std::string& error)
 	return true;
 }
 
-void Database::QueueQuery(const char* query, int callback, int callbackref)
+void Database::QueueQuery(const char* query, int callback, int callbackref, bool usenumbers)
 {
-	Query* newquery = new Query(query, callback, callbackref);
+	Query* newquery = new Query(query, callback, callbackref, usenumbers);
 	QueueQuery(newquery);
 }
 

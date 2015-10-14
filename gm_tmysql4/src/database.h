@@ -109,8 +109,8 @@ typedef std::vector<Result*> Results;
 class Query
 {
 public:
-	Query(const char* query, int callback = -1, int callbackref = -1) :
-		m_strQuery(query), m_iCallback(callback), m_iCallbackRef(callbackref)
+	Query(const char* query, int callback = -1, int callbackref = -1, bool usenumbers = false) :
+		m_strQuery(query), m_iCallback(callback), m_iCallbackRef(callbackref), m_bUseNumbers(usenumbers)
 	{
 	}
 
@@ -126,6 +126,8 @@ public:
 	int					GetCallback(void) { return m_iCallback; }
 	int					GetCallbackRef(void) { return m_iCallbackRef; }
 
+	bool				GetUseNumbers(void) { return m_bUseNumbers; }
+
 	void				AddResult(Result* result) { m_pResults.push_back(result); }
 	Results				GetResults(void) { return m_pResults; }
 
@@ -140,6 +142,7 @@ private:
 	std::string			m_strQuery;
 	int					m_iCallback;
 	int					m_iCallbackRef;
+	bool				m_bUseNumbers;
 
 	Results				m_pResults;
 
@@ -165,7 +168,7 @@ public:
 	const char*		GetDatabase(void) { return m_strDB; }
 	bool			SetCharacterSet(const char* charset, std::string& error);
 	char*			Escape(const char* query);
-	void			QueueQuery(const char* query, int callback = -1, int callbackref = -1);
+	void			QueueQuery(const char* query, int callback = -1, int callbackref = -1, bool usenumbers = false);
 
 	Query*			GetCompletedQueries();
 

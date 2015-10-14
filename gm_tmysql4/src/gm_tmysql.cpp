@@ -160,11 +160,11 @@ int query(lua_State* state)
 	int callbackobj = LUA->GetType(4);
 	if (callbackobj != Type::NIL)
 	{
-		LUA->Push(5);
+		LUA->Push(4);
 		callbackref = LUA->ReferenceCreate();
 	}
 
-	mysqldb->QueueQuery( query, callbackfunc, callbackref );
+	mysqldb->QueueQuery( query, callbackfunc, callbackref, LUA->GetBool(5) );
 	return 0;
 }
 
@@ -271,7 +271,7 @@ void HandleQueryCallback(lua_State* state, Query* query)
 	}
 }
 
-void PopulateTableFromResult(lua_State* state, MYSQL_RES* result)
+void PopulateTableFromResult(lua_State* state, MYSQL_RES* result, bool usenumbers)
 {
 	// no result to push, continue, this isn't fatal
 	if (result == NULL)
@@ -297,6 +297,9 @@ void PopulateTableFromResult(lua_State* state, MYSQL_RES* result)
 
 		for (unsigned int i = 0; i < field_count; i++)
 		{
+			if (usenumbers == true)
+				LUA->PushNumber(i+1);
+
 			if (row[i] == NULL)
 				LUA->PushNil();
 			else if (IS_NUM(fields[i].type) && fields[i].type != MYSQL_TYPE_LONGLONG)
@@ -304,7 +307,10 @@ void PopulateTableFromResult(lua_State* state, MYSQL_RES* result)
 			else
 				LUA->PushString(row[i], lengths[i]);
 
-			LUA->SetField(-2, fields[i].name);
+			if (usenumbers == true)
+				LUA->SetTable(-3);
+			else
+				LUA->SetField(-2, fields[i].name);
 		}
 
 		LUA->SetTable(-3);
@@ -313,7 +319,7 @@ void PopulateTableFromResult(lua_State* state, MYSQL_RES* result)
 	}
 }
 
-void PopulateTableFromQuery(lua_State* state, Query* query)
+void PopulateTableFromQuery(lua_State* state, Query* query, bool usenumbers)
 {
 	Results results = query->GetResults();
 
@@ -340,7 +346,7 @@ void PopulateTableFromQuery(lua_State* state, Query* query)
 				LUA->PushNumber(result->GetLastID());
 				LUA->SetField(-2, "lastid");
 				LUA->CreateTable();
-				PopulateTableFromResult(state, result->GetResult());
+				PopulateTableFromResult(state, result->GetResult(), query->GetUseNumbers());
 				LUA->SetField(-2, "data");
 			}
 #ifdef ENABLE_QUERY_TIMERS
@@ -392,8 +398,8 @@ GMOD_MODULE_OPEN()
 		LUA->SetField(-2, "CLIENT_TRANSACTIONS");
 		LUA->PushNumber(CLIENT_RESERVED);
 		LUA->SetField(-2, "CLIENT_RESERVED");
-		LUA->PushNumber(CLIENT_SECURE_CONNECTION);
-		LUA->SetField(-2, "CLIENT_SECURE_CONNECTION");
+		LUA->PushNumber(CLIENT_RESERVED2);
+		LUA->SetField(-2, "CLIENT_RESERVED2");
 		LUA->PushNumber(CLIENT_MULTI_STATEMENTS);
 		LUA->SetField(-2, "CLIENT_MULTI_STATEMENTS");
 		LUA->PushNumber(CLIENT_MULTI_RESULTS);
