@@ -6,13 +6,13 @@ solution "gm_tmysql4"
 	location ( os.get() .."-".. _ACTION )
 	flags { "Symbols", "NoEditAndContinue", "NoPCH", "StaticRuntime", "EnableSSE" }
 	targetdir ( "lib/" .. os.get() .. "/" )
-	includedirs { "include/GarrysMod", "include/" .. os.get(), boost } 
+	includedirs { "include/GarrysMod", "include/mysql", boost } 
 	platforms{ "x32" }
 	libdirs { "library/" .. os.get(), boost .. "/stage/lib" }
 	if os.get() == "windows" then
 		links { "libmysql" }
 	elseif os.get() == "linux" then
-		links { "mysqlclient", "boost_date_time", "boost_regex", "boost_system" }
+		links { "mysqlclient", "boost_system" }
 	else error( "unknown os: " .. os.get() ) end
 	
 	configurations
