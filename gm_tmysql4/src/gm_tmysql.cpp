@@ -319,7 +319,7 @@ void PopulateTableFromResult(lua_State* state, MYSQL_RES* result, bool usenumber
 	}
 }
 
-void PopulateTableFromQuery(lua_State* state, Query* query, bool usenumbers)
+void PopulateTableFromQuery(lua_State* state, Query* query)
 {
 	Results results = query->GetResults();
 
@@ -361,9 +361,9 @@ void PopulateTableFromQuery(lua_State* state, Query* query, bool usenumbers)
 
 GMOD_MODULE_OPEN()
 {
-	in_shutdown = false;
-
 	mysql_library_init(0, NULL, NULL);
+
+	in_shutdown = false;
 
 	LUA->CreateTable();
 	iRefDatabases = LUA->ReferenceCreate();
@@ -398,8 +398,6 @@ GMOD_MODULE_OPEN()
 		LUA->SetField(-2, "CLIENT_TRANSACTIONS");
 		LUA->PushNumber(CLIENT_RESERVED);
 		LUA->SetField(-2, "CLIENT_RESERVED");
-		LUA->PushNumber(CLIENT_RESERVED2);
-		LUA->SetField(-2, "CLIENT_RESERVED2");
 		LUA->PushNumber(CLIENT_MULTI_STATEMENTS);
 		LUA->SetField(-2, "CLIENT_MULTI_STATEMENTS");
 		LUA->PushNumber(CLIENT_MULTI_RESULTS);

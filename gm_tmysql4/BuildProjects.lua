@@ -1,4 +1,4 @@
-local boost = "/media/jake/storage/Documents/Developer/cpp/boost_1_57_0/"
+local boost = "/home/jake/Developer/boost_1_57_0"
 
 solution "gm_tmysql4"
 
@@ -6,7 +6,7 @@ solution "gm_tmysql4"
 	location ( os.get() .."-".. _ACTION )
 	flags { "Symbols", "NoEditAndContinue", "NoPCH", "StaticRuntime", "EnableSSE" }
 	targetdir ( "lib/" .. os.get() .. "/" )
-	includedirs { "include/GarrysMod", "include/" .. os.get(), boost }
+	includedirs { "include/GarrysMod", "include/" .. os.get(), boost } 
 	platforms{ "x32" }
 	libdirs { "library/" .. os.get(), boost .. "/stage/lib" }
 	if os.get() == "windows" then
@@ -21,7 +21,7 @@ solution "gm_tmysql4"
 	}
 	
 	configuration "Release"
-		buildoptions { "-std=c++11" }
+		buildoptions { "-std=c++11 -Wno-deprecated-declarations -pthread -Wl,-z,defs" }
 		defines { "NDEBUG" }
 		flags{ "Optimize", "FloatFast" }
 	

@@ -1,4 +1,7 @@
-/* Copyright (c) 2000, 2014, Oracle and/or its affiliates. All rights reserved.
+#ifndef SSLOPT_LONGOPTS_INCLUDED
+#define SSLOPT_LONGOPTS_INCLUDED
+
+/* Copyright (c) 2000, 2013, Oracle and/or its affiliates. All rights reserved.
 
    This program is free software; you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published by
@@ -40,7 +43,7 @@
   {"ssl-crl", OPT_SSL_CRL, "Certificate revocation list.",
    &opt_ssl_crl, &opt_ssl_crl, 0, GET_STR, REQUIRED_ARG,
    0, 0, 0, 0, 0, 0},
-  {"ssl-crlpath", OPT_SSL_CRLPATH,
+  {"ssl-crlpath", OPT_SSL_CRLPATH, 
     "Certificate revocation list path.",
    &opt_ssl_crlpath, &opt_ssl_crlpath, 0, GET_STR, REQUIRED_ARG,
    0, 0, 0, 0, 0, 0},
@@ -52,3 +55,4 @@
    0, GET_BOOL, OPT_ARG, 0, 0, 0, 0, 0, 0},
 #endif
 #endif /* HAVE_OPENSSL */
+#endif /* SSLOPT_LONGOPTS_INCLUDED */
